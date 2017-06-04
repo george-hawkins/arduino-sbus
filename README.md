@@ -1,0 +1,62 @@
+Arduino S.BUS
+=============
+
+I have an FrSKY [X8R receiver](http://www.frsky-rc.com/product/pro.php?pro_id=105) and I wanted to see the S.BUS channel values changing as I moved the sticks on my transmitter.
+
+There are a number of Arduino libraries for decoding S.BUS output. I looked at all of them and chose the [zendes/SBUS](https://github.com/zendes/SBUS) one as it's short and simple and unlike some other libraries fully decodes the flag byte (for details of the S.BUS protocol see the protocol details [here](https://developer.mbed.org/users/Digixx/notebook/futaba-s-bus-controlled-by-mbed/)).
+
+S.BUS is a serial protocol that operates at 100Kbps. Only the UNO's single hardware serial port can support this kind of speed ([SoftwareSerial](https://www.arduino.cc/en/Reference/softwareSerial) can only go up to 57.6Kbps and [AltSoftSerial](https://www.pjrc.com/teensy/td_libs_AltSoftSerial.html) can only go up to 31.25Kbps on an UNO).
+
+The UNO's hardware serial port is tunnelled via USB to your computer and under normal circumstances the hardware serial port is used for uploading sketches and for communicating, using `Serial.println(...)`, with the serial console of the Arduino IDE.
+
+However in this setup `Serial`, i.e. our single hardware serial port, will be needed for receiving data from the receiver's S.BUS port. So it will not be possible to use `Serial.println(...)` to output information and to upload sketches it will be necessary to temporarily unplug the wire running from the Arduino RX pin to the signal pin of the receiver.
+
+Unfortunately the S.BUS output from the X8R is inverted so we need a simple inverter circuit (involving a NPN transistor and two resistors) so that the Arduino can make sense of the signal. If we were using a software serial library it might be possible to do this inversion in the code but as explained this isn't an option here.
+
+Instead of outputting information to the serial console the setup here uses four LEDs to show the current values of the first four S.BUS channels - these generally correspond to the four stick directions.
+
+Hardware setup
+--------------
+
+For the inverter part of the circuit you'll need an NPN bipolar transistor with a standard EBC pinout (something like these [PN2222A](https://www.adafruit.com/product/756) transistors) and a 10K&Omega; and a 1K&Omega; resistor. For the LED part of the circuit you'll need four of the kind of hobbyist LEDs that are typically paired with 220&Omega; resistors (when used in 5V circuits) along with four such 220&Omega; resistors.
+
+The circuit should be wired up as shown here:
+
+![circuit](arduino-sbus_bb.png)
+
+The resistor going from the power rail of the breadboard to the row with the E pin of the transistor is the 1K&Omega; resistor while the one from the row with the B pin of the transistor (and on to the signal pin of the receiver) is the 10K&Omega; resistor. The resistors connected to the short legs of the LEDs are all 220&Omega;.
+
+Note: in many inverter circuits you'll see noticeably different resistor values being used - the 10K&Omega; and a 1K&Omega; values work fine but a large range of values are also acceptable.
+
+Software setup
+--------------
+
+Download this project as a ZIP file from Github (just click [here](https://github.com/george-hawkins/arduino-sbus/archive/master.zip)).
+
+Then assuming you've got a recent version of the [Arduino IDE](https://www.arduino.cc/en/Main/Software) go to to the menu item  _Sketch_ / _Include Library_ / _Add .ZIP Library_ and select the ZIP file you just downloaded.
+
+Then go to _File_ / _Examples_ - near the bottom of this menu you should find _arduino-sbus-master_ and you can select _sbusleds_ from its submenu.
+
+Now with this example sketch open plug in your UNO via USB and unplug the cable going into the RX pin of the UNO. Upload the sketch to the UNO and once the upload is complete reconnect the cable to the RX pin. You'll need to repeat this process of disconnecting and reconnecting the RX pin everytime you want to upload a new version of the sketch. You don't need to remove power from the circuit when doing this.
+
+Assuming your transmitter is on the green LED on the receiver should be on, indicating that it's connected to the transmitter. If you now move the sticks on your transmitter you should see the corresponding LEDs change in brightness accordingly.
+
+Notes
+-----
+
+You can find the [Fritzing](http://fritzing.org/home/) file used to generate the breadboard picture above [here](rduino-sbus.fzz).
+
+If you used the popular [Teensy 3.2](https://www.pjrc.com/store/teensy32.html) (or the [Arduino MEGA 2560](https://www.arduino.cc/en/main/arduinoBoardMega2560)) you'd have more than one hardware serial port and so wouldn't have the issue seen here where the main hardware serial port is tied up communicating with the receiver. In such a setup you could attach the receiver to one of the secondard hardware serial ports and communicate as normal with the Arduino IDE serial console. So rather than using LEDs to output a limited amount of information you could dump out everything received via S.BUS - as is done in the original [BasicStatus sketch](https://github.com/zendes/SBUS/blob/master/examples/BasicStatus/BasicStatus.ino) sketch, that accompanies the original [zendes/SBUS](https://github.com/zendes/SBUS/) library, where the output of the receiver is assumed to be connected to the RX pin of `Serial3`.
+
+The LEDs in the setup above are connected to pins 5, 6, 9 and 10 of the UNO. On the UNO only pins 3, 5, 6, 9, 10, and 11 support the `analogWrite(...)` function used here to vary the intensity of the LEDs (see the [`analogWrite(...) reference](https://www.arduino.cc/en/Reference/analogWrite)), however pin 3 was not used here as the sketch also uses timer 2 which ties up pin 3 (although I'm not sure it really needs to). For more on timers and pins see [here](https://arduino-info.wikispaces.com/Timers-Arduino) and [here](https://playground.arduino.cc/Main/TimerPWMCheatsheet).
+
+The [sbusleds sketch](examples/sbusleds/sbusleds.ino) provided here sets up timer 2 to invoke `sbus.process()` every millisecond to process S.BUS input. This may give the false impression that you can choose what timer you want to use - this is not the case as the assumption that timer 2 will be used, if you're using timers, is hardcoded into `SBUS::begin(bool)` in [`SBUS.cpp`](SBUS.cpp). This implicit dependency should be made explicit or the code adjusted so any available timer can be used.
+
+For more on inverter circuits and transistors see the [Sparkfun transistor tutorial](https://learn.sparkfun.com/tutorials/transistors/).
+
+Licence
+-------
+
+Normally I use the Apache version 2 license but this project retains the GPLv2 license of the original [zendes/SBUS](https://github.com/zendes/SBUS) project.
+
+Note: the [zendes/SBUS](https://github.com/zendes/SBUS) library is an Arduino port of the mbed [SBUS-Library_16channel](https://developer.mbed.org/users/Digixx/code/SBUS-Library_16channel/) library from Uwe Gartmann that has no clear license details.
