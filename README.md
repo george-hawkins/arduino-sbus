@@ -75,7 +75,7 @@ As noted above one could avoid the complexity around having to use the only hard
 
 Here is a circuit layout using the Teensy 3.2 where the receiver is connected to the RX pin of the second hardware serial port.
 
-![teensy circuit](images/teensy-sbus_bb.png)
+<img width="440" src="teensy-sbus_bb.png">
 
 **Important:** I haven't built this circuit or tried it out so it may do nothing or explode for all I know.
 
