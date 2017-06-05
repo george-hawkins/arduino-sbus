@@ -79,6 +79,8 @@ Here is a circuit layout using the Teensy 3.2 where the receiver is connected to
 
 **Important:** I haven't built this circuit or tried it out so it may do nothing or explode for all I know.
 
+TODO: DanNixon has adapted the zendes/SBUS library for the Teensy - see [DanNixon/SBUS](https://github.com/DanNixon/SBUS/) - he replaces the AVR specific timer logic with code appropriate for the Teensy.
+
 The Teensy 3.2 is a 3.3V device while the X8R receiver requires a minimum input voltage of 4V. We can provide the receiver with 5V if we power the Teensy via USB and then connect the VIN pin to the breadboard (which should make available the 5V provided by USB).
 
 The receiver operates at 100mA<span>@</span>5V. We can connect the circuit's 5V signal directly to the RX2 pin of the Teensy as all its digital input pins are 5V tolerant.
