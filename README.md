@@ -1,3 +1,5 @@
+Note: for a variation using the Teensy 3.2 see the bottom of this page.
+
 Arduino S.BUS
 =============
 
@@ -49,7 +51,7 @@ Photos
 Notes
 -----
 
-You can find the [Fritzing](http://fritzing.org/home/) file used to generate the breadboard picture above [here](rduino-sbus.fzz).
+You can find the [Fritzing](http://fritzing.org/home/) file used to generate the breadboard picture above [here](arduino-sbus.fzz).
 
 If, rather than an UNO, you used the popular [Teensy 3.2](https://www.pjrc.com/store/teensy32.html) (or the [Arduino MEGA 2560](https://www.arduino.cc/en/main/arduinoBoardMega2560)) you'd have more than one hardware serial port and so wouldn't have the issue seen here where the main hardware serial port is tied up communicating with the receiver. In such a setup you could attach the receiver to one of the secondary hardware serial ports and communicate as normal with the Arduino IDE serial console. So rather than using LEDs to output a limited amount of information you could dump out everything received via S.BUS - as is done in the original [BasicStatus sketch](https://github.com/zendes/SBUS/blob/master/examples/BasicStatus/BasicStatus.ino) that accompanies the original [zendes/SBUS](https://github.com/zendes/SBUS/) library (in this sketch the output of the receiver is assumed to be connected to the RX pin of `Serial3`).
 
@@ -65,3 +67,26 @@ Licence
 Normally I use the Apache version 2 license but this project retains the [GPLv2 license](LICENSE) of the original [zendes/SBUS](https://github.com/zendes/SBUS) project.
 
 Note: the [zendes/SBUS](https://github.com/zendes/SBUS) library is an Arduino port of the mbed [SBUS-Library_16channel](https://developer.mbed.org/users/Digixx/code/SBUS-Library_16channel/) library from Uwe Gartmann that has no clear license details.
+
+Teensy 3.2
+----------
+
+As noted above one could avoid the complexity around having to use the only hardware serial port of the UNO to communicate with the receiver if using a board like the Teensy 3.2 that has multiple hardware serial ports.
+
+Here is a circuit layout using the Teensy 3.2 where the receiver is connected to the RX pin of the second hardware serial port.
+
+![teensy circuit](images/teensy-sbus_bb.png)
+
+**Important:** I haven't built this circuit or tried it out so it may do nothing or explode for all I know.
+
+The Teensy 3.2 is a 3.3V device while the X8R receiver requires a minimum input voltage of 4V. We can provide the receiver with 5V if we power the Teensy via USB and the connect the VIN pin to the breadboard (which should make available the 5V provided by USB).
+
+The receiver operates at 100mA@5V. We can connect the circuit's 5V signal directly to the RX2 pin of the Teensy as all its digital input pins are 5V tolerant.
+
+The Fritzing file for the above Teensy circuit can be found [here](teensy-sbus.fzz).
+
+TODO: check that 5V tolerant works as expected when using a pin as a hardware serial pin.
+
+TODO: confirm that the VIN pin provides the 5V delivered by USB.
+
+TODO: just dumping S.BUS data to the console as is done in the  original [BasicStatus sketch](https://github.com/zendes/SBUS/blob/master/examples/BasicStatus/BasicStatus.ino) isn't very readable. Try something like the processing sketch described [here by ROBOTmaker](http://www.robotmaker.eu/ROBOTmaker/quadcopter-3d-proximity-sensing/sbus-graphical-representation). Note: the ROBOTmaker processing sketch seems to consume raw S.BUS packets directly on the main computer - it's unclear if the computer reads these directly via FTDI or if this happens via the UNO (in which case it'd have to be every nth packet as the UNO can't both read the signal at 100Kbps and forward it on).
