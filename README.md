@@ -81,7 +81,7 @@ Here is a circuit layout using the Teensy 3.2 where the receiver is connected to
 
 The Teensy 3.2 is a 3.3V device while the X8R receiver requires a minimum input voltage of 4V. We can provide the receiver with 5V if we power the Teensy via USB and then connect the VIN pin to the breadboard (which should make available the 5V provided by USB).
 
-The receiver operates at 100mA\@5V. We can connect the circuit's 5V signal directly to the RX2 pin of the Teensy as all its digital input pins are 5V tolerant.
+The receiver operates at 100mA&#64;5V. We can connect the circuit's 5V signal directly to the RX2 pin of the Teensy as all its digital input pins are 5V tolerant.
 
 The Fritzing file for the above Teensy circuit can be found [here](teensy-sbus.fzz).
 
