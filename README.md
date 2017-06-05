@@ -22,7 +22,7 @@ For the inverter part of the circuit you'll need an NPN bipolar transistor with 
 
 The circuit should be wired up as shown here.
 
-![circuit](arduino-sbus_bb.png)
+![circuit](images/arduino-sbus_bb.png)
 
 The resistor going from the power rail of the breadboard to the row with the E pin of the transistor is the 1K&Omega; resistor while the one from the row with the B pin of the transistor (and on to the signal pin of the receiver) is the 10K&Omega; resistor. The resistors connected to the short legs of the LEDs are all 220&Omega;.
 
@@ -40,6 +40,11 @@ Then go to _File_ / _Examples_ - near the bottom of this menu you should now fin
 Now with this example sketch open plug in your UNO via USB and unplug the cable going into the RX pin of the UNO. Upload the sketch and once the upload is complete reconnect the cable to the RX pin. You'll need to repeat this process of disconnecting and reconnecting the RX pin everytime you want to upload a new version of the sketch. You don't need to remove power from the circuit when doing this.
 
 If your transmitter is on then the green LED on the receiver should be on, indicating that it's connected to the transmitter. If you now move the sticks on your transmitter you should see the corresponding LEDs change in brightness accordingly.
+
+Photos
+------
+
+<img width="420" src="images/tx-and-breadboard.jpg"> <img width="420" src="images/breadboard.jpg">
 
 Notes
 -----
