@@ -5,7 +5,7 @@ Arduino S.BUS
 
 I have an FrSKY [X8R receiver](http://www.frsky-rc.com/product/pro.php?pro_id=105) and I wanted to see the S.BUS channel values changing as I moved the sticks on my transmitter.
 
-There are a number of Arduino libraries for decoding S.BUS output. I looked at all of them and chose the [zendes/SBUS](https://github.com/zendes/SBUS) one as it's short and simple and unlike some other libraries fully decodes the S.BUS flag byte (for details of the S.BUS protocol see the details [here](https://developer.mbed.org/users/Digixx/notebook/futaba-s-bus-controlled-by-mbed/)).
+There are a number of Arduino libraries for decoding S.BUS output. I looked at all of them and chose the [zendes/SBUS](https://github.com/zendes/SBUS) one as it's short and simple and it more fully decodes the S.BUS flag byte than some of the other libraries (for details of the S.BUS protocol see [here](https://developer.mbed.org/users/Digixx/notebook/futaba-s-bus-controlled-by-mbed/)).
 
 S.BUS is a serial protocol that operates at 100Kbps. Only the UNO's single hardware serial port can support this kind of speed ([SoftwareSerial](https://www.arduino.cc/en/Reference/softwareSerial) can only go up to 57.6Kbps and [AltSoftSerial](https://www.pjrc.com/teensy/td_libs_AltSoftSerial.html) can only go up to 31.25Kbps on the UNO).
 
@@ -71,7 +71,7 @@ Note: the [zendes/SBUS](https://github.com/zendes/SBUS) library is an Arduino po
 Teensy 3.2
 ----------
 
-As noted above one could avoid the complexity around having to use the only hardware serial port of the UNO to communicate with the receiver if using a board like the Teensy 3.2 that has multiple hardware serial ports.
+As noted above one could avoid the complexity around having to use the only hardware serial port of the UNO to communicate with the receiver if using a board like the [Teensy 3.2](https://www.pjrc.com/store/teensy32.html) that has multiple hardware serial ports.
 
 Here is a circuit layout using the Teensy 3.2 where the receiver is connected to the RX pin of the second hardware serial port.
 
@@ -79,7 +79,7 @@ Here is a circuit layout using the Teensy 3.2 where the receiver is connected to
 
 **Important:** I haven't built this circuit or tried it out so it may do nothing or explode for all I know.
 
-The Teensy 3.2 is a 3.3V device while the X8R receiver requires a minimum input voltage of 4V. We can provide the receiver with 5V if we power the Teensy via USB and the connect the VIN pin to the breadboard (which should make available the 5V provided by USB).
+The Teensy 3.2 is a 3.3V device while the X8R receiver requires a minimum input voltage of 4V. We can provide the receiver with 5V if we power the Teensy via USB and then connect the VIN pin to the breadboard (which should make available the 5V provided by USB).
 
 The receiver operates at 100mA@5V. We can connect the circuit's 5V signal directly to the RX2 pin of the Teensy as all its digital input pins are 5V tolerant.
 
