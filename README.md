@@ -92,6 +92,8 @@ Note that the example code in the DanNixon repo (as in the original) makes no ef
 * Note the `static` variables in `SBUS::process()` - as it stands you couldn't have more than one `SBUS` instance even on a device that has multiple serial ports.
 * Note that the internal state of `SBUS` is only updated whenever the `buffer_index == 25` logic is hit (although if the `static` variables in `SBUS::process()` were turned into member variables these would update more frequently).
 
+Note: Szabolcs Gyurko's has a heavily modified version of the the original non-mbed derived Arduino SBUS library that supports interacting with as many S.BUS devices as you have serial ports - see [here](https://gitlab.hacking.hu/szabolcs/arduino-futaba-sbus).
+
 The Teensy 3.2 is a 3.3V device while the X8R receiver requires a minimum input voltage of 4V. We can provide the receiver with 5V if we power the Teensy via USB and then connect the VIN pin to the breadboard (which should make available the 5V provided by USB).
 
 The receiver operates at 100mA<span>@</span>5V. We can connect the circuit's 5V signal directly to the RX2 pin of the Teensy as all its digital input pins are 5V tolerant.
