@@ -79,15 +79,18 @@ Here is a circuit layout using the Teensy 3.2 where the receiver is connected to
 
 **Important:** I haven't built this circuit or tried it out so it may do nothing or explode for all I know.
 
-TODO: DanNixon has adapted the zendes/SBUS library for the Teensy - see [DanNixon/SBUS](https://github.com/DanNixon/SBUS/) - he moves the timer code out of the S.BUS library (as should be the case whatever the board). Instead of AVR specific timer logic he uses the TimerThree library which works on the Teensy and would also work on a Mega. A better alternative would seem to be the [TimerOne](https://github.com/PaulStoffregen/TimerOne) library as it uses a timer available on the UNO, Teensy and Mega. Note: on the UNO timer0 is used for `delay()` and `millis()`, timer2 for `tone()` while timer1 and timer3 are free (though timer1 is taken if using the standard [servo library](https://www.arduino.cc/en/Reference/Servo)). Note that the example code in the DanNixon repo (as in the original) makes no effort as far as synchronization is concerned between interrupt invoked code and normal code. In comparison see the use of `noInterrupts()` and `volatile` in the TimerOne [interrupt example](https://github.com/PaulStoffregen/TimerOne/blob/master/examples/Interrupt/Interrupt.pde). How `volatile` works in the context of arrays is unclear to me at the moment. I suspect `SBUS` should use a critical section for the `buffer_index == 25` logic where all the internal state is updated and that it should have a copy constructor that respects this critical section and allows the caller to make a quick copy that can then be interogated at leisure. `SBUS` could even be made into a black box with no interface beyond that needed to get out an interogable copy of its internal state.
+TODO: DanNixon has adapted the zendes/SBUS library for the Teensy - see [DanNixon/SBUS](https://github.com/DanNixon/SBUS/) - he moves the timer code out of the S.BUS library (as should be the case whatever the board). Instead of AVR specific timer logic he uses the TimerThree library which works on the Teensy and would also work on a Mega. A better alternative would seem to be the [TimerOne](https://github.com/PaulStoffregen/TimerOne) library as it uses a timer available on the UNO, Teensy and Mega.
 
-TODO:
+Note: on the UNO timer0 is used for `delay()` and `millis()`, timer2 for `tone()` while timer1 and timer3 are free (though timer1 is taken if using the standard [servo library](https://www.arduino.cc/en/Reference/Servo)).
 
-* Make black box `SBUS` which just has methods `begin()` and `process()` and a new method to copy out its internal state.
+Note that the example code in the DanNixon repo (as in the original) makes no effort as far as synchronization is concerned between interrupt invoked code and normal code. In comparison see the use of `noInterrupts()` and `volatile` in the TimerOne [interrupt example](https://github.com/PaulStoffregen/TimerOne/blob/master/examples/Interrupt/Interrupt.pde). So:
+
+* Make `SBUS` a black box which just has methods `begin()` and `process()` and a new method to copy out its internal state.
 * Make all member fields of `SBUS` `volatile`.
 * Make the copy-out method use `noInterrupts()` / `interrupts()` - this is how critical sections are done in this context (see Nick Gammon's [article on interrupts](http://gammon.com.au/interrupts)).
-* Make a new class that contains the same member fields but doesn't need them to be `volatile` and move the `getChannel()` etc. methods to this class.
+* Make a new class that contains the same member fields but doesn't need them to be `volatile` and move the `getChannel()` etc. methods to this class. This contains the copied out state which can be interogated at leisure.
 * Note the `static` variables in `SBUS::process()` - as it stands you couldn't have more than one `SBUS` instance even on a device that has multiple serial ports.
+* Note that the internal state of `SBUS` is only updated whenever the `buffer_index == 25` logic is hit (although if the `static` variables in `SBUS::process()` were turned into member variables these would update more frequently).
 
 The Teensy 3.2 is a 3.3V device while the X8R receiver requires a minimum input voltage of 4V. We can provide the receiver with 5V if we power the Teensy via USB and then connect the VIN pin to the breadboard (which should make available the 5V provided by USB).
 
